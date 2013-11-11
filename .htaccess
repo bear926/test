@@ -1,0 +1,19 @@
+AddDefaultCharset UTF-8
+RewriteEngine On
+RewriteBase /
+
+#RewriteRule ^(?:application|modules|system)\b.* index.php/$0 [L]
+#php_value display_errors 1
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^.*? index.php/$0 [PT]
+
+RewriteCond %{HTTP_HOST} ^www.test1.rpgfun.net$
+RewriteRule (.*) http://test1.rpgfun.net/$1 [R=301,L]
+
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php\ HTTP/
+RewriteRule ^index\.php$ http://test1.rpgfun.net [R=301,L]
+

@@ -1,0 +1,30 @@
+﻿<?php 
+//menu 
+ $gol = "Home";
+ $new = "New";
+ $in = "Other";
+ $av = "Author";
+ $kon = "Contacts";
+ //register and enter
+ $regi = "Register";
+ $log = "login";
+ $pas = "Password";
+ $welcom = "Logged in as ";
+ $out = "out"; 
+ //add news
+ $na = "Submit News";
+ $pic = "Enter data from images";
+ $namar = "News title";
+ $shortn = "Short text news";
+ $fulln = "Full text news";
+//msg
+ $erdata = "Invalid!";
+ $nodata = "NOT ALL DATA!";
+ $erok = "Registration successful.";
+ $ercap = "False Captha, try again.";
+ $ins = "News insert.";
+ $up = "News update.";
+ $del = "News deleted №"; 
+ $redact = "Redact"; 
+ $more = "Read More";			
+?>
