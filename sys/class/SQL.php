@@ -28,17 +28,48 @@ class SQL extends PDO {
 			return false;
 		}  
 	}
+	
+	
+	/**
+	 * function check_reg();
+	 * Checks whether there is a user.
+	 *
+	 * @param string $email
+	 *   Email user
+	 *
+	 * @param string $login
+	 *   Login user.
+	 *
+	 * @return bollean true or false
+	 *   
+	 */
+	function check_reg($email, $login) {
+	
+		$mail = Registration::clear($email);
+		$login = Registration::clear($login);
 		
+		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$sql = "SELECT role FROM users WHERE login = '$login' and email = '$mail'";
+		$stmt = $PDO->query($sql);
+		$rez = $stmt->fetch(PDO::FETCH_OBJ);
+		if ($rez) {
+			return true;
+		}
+		else {
+			return false;
+		} 
+	}
+	
 	function log($login, $pass){
 		$pass = md5($pass);
 		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT role FROM users WHERE login = '$login' and pass = '$pass'";
 		$stmt = $PDO->query($sql);
 		$rez = $stmt->fetch(PDO::FETCH_OBJ);
-		if($rez){
+		if ($rez) {
 			return $rez->role;
 		}
-		else{
+		else {
 			return false;
 		}
 	}
@@ -103,7 +134,6 @@ class SQL extends PDO {
 		if ($curp == NULL)
 			$curp = '1';
 		$page = 2;
-		//var_dump($curp);
 		$curp -= 1;
 		$curp *= $page;
 		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
@@ -120,12 +150,9 @@ class SQL extends PDO {
 			ORDER BY posts.id DESC
 			LIMIT $curp, $page
 		";
-		//var_dump($sql);
 		$stmt = $PDO->query($sql);
-		//var_dump($stmt);
 		global $datam;
 		$datam = $stmt->fetchAll(PDO::FETCH_NUM); 
-		//var_dump($datam);
 		return $datam;
 		}
 			
@@ -150,6 +177,7 @@ class SQL extends PDO {
 	}
 	
 	/**
+	 * function page();
 	 * Explode pages as qeury.
 	 *
 	 * @param string $n

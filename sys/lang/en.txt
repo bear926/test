@@ -9,8 +9,10 @@
  $regi = "Register";
  $log = "login";
  $pas = "Password";
+ $pasr = 'Re-type password';
  $welcom = "Logged in as ";
  $out = "out"; 
+ $chekus = "User with username, or email already exists";
  //add news
  $na = "Submit News";
  $pic = "Enter data from images";
