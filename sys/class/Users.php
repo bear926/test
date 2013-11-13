@@ -4,13 +4,10 @@ class Users{
 	public $login;
 	public $pass;
 	public $q = false;
-function clear($str){	
-		return addcslashes(htmlspecialchars(trim($str)));
-	}
+
 
 function __construct($login="", $pass=""){
-		$this->clear($login);
-		$this->clear($pass);
+		
 			if(!empty($login) or !empty($pass)) {
 				if(SQL::log($login,$pass)){
 					session_start();

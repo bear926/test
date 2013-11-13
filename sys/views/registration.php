@@ -2,6 +2,10 @@
 defined('IND') or die('No direct script access.');
 if($_SERVER["REQUEST_METHOD"]=="POST")
 	$reg = new Registration($_POST['email'],$_POST['login'],$_POST['pass'],$_POST['passr']);
+if (isset($_SESSION['msgr'])) {
+		echo $_SESSION['msgr'];
+		unset($_SESSION['msgr']);
+}
 if(!$_SESSION['msg']){
 ?>
 <h1><?=$regi?></h1>

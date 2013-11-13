@@ -37,10 +37,18 @@ class URL {
 				return $v;
 			}
 		}
-		
+		/**
+	 * function adm();
+	 * Checks string the address bar
+	 *
+	 * @param string $str
+	 *   string who search
+	 *
+	 * @return string $str
+	 *   string who search
+	 */	
 	function adm($str){
 			$adr = explode('/', $_SERVER['REQUEST_URI']);
-			
 			foreach($adr as $k){
 				$c = strpos($k, $str);
 				if($c !== false){

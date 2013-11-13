@@ -1,10 +1,11 @@
 <?php
-//defined('IND') or die('No direct script access.');
+defined('IND') or die('No direct script access.');
 class SQL extends PDO {
 
 	const DB_HOST = 'localhost';
-	const DB_LOGIN = "root1";
-	const DB_PASSWORD = "password";
+	const DB_LOGIN = 'root1';
+	const DB_PASSWORD = 'password';
+	const DB_NAME = 'test1';
 	
 	public $sql;
 	public $v;
@@ -15,12 +16,13 @@ class SQL extends PDO {
 	public $PDO;
 	
 	function reg($email,$login, $pass) {
-		$mail = Registration::clear($mail);
+		$mail  = Registration::clear($mail);
 		$login = Registration::clear($login);
-		$pass = Registration::clear($pass);
+		$pass  = Registration::clear($pass);
 		$pass = md5($pass);
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
-		$sql = "INSERT INTO users (email, login, pass) VALUES ('$email', '$login','$pass')";
+		$time = date("Y-m-d H:i:s", time());
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sql = "INSERT INTO users (email, login, pass, treg) VALUES ('$email', '$login','$pass','$time')";
 		if ($PDO->query($sql)) {
 			return true;
 		}
@@ -44,12 +46,10 @@ class SQL extends PDO {
 	 *   
 	 */
 	function check_reg($email, $login) {
-	
 		$mail = Registration::clear($email);
 		$login = Registration::clear($login);
-		
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
-		$sql = "SELECT role FROM users WHERE login = '$login' and email = '$mail'";
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sql = "SELECT role FROM users WHERE login = '$login' or email = '$mail'";
 		$stmt = $PDO->query($sql);
 		$rez = $stmt->fetch(PDO::FETCH_OBJ);
 		if ($rez) {
@@ -60,22 +60,129 @@ class SQL extends PDO {
 		} 
 	}
 	
+	/**
+	 * function show_user();
+	 * Show all user.
+	 *
+	 * @param string $email
+	 *   Email user
+	 *
+	 * @param string $login
+	 *   Login user.
+	 *
+	 * @return araay $rez or false
+	 *   
+	 */
+	function show_user() {
+		
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sql = "SELECT login, role FROM users";
+		$stmt = $PDO->query($sql);
+		$rez = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		if ($rez) {
+			return $rez;
+		}
+		else {
+			return false;
+		} 
+	}
+	
+		/**
+	 * function del_user();
+	 * Delete user.
+	 *
+	 * @param string $user
+	 *   Login user.
+	 *
+	 * @return true or false
+	 *   
+	 */
+	function del_user($user) {
+		
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sql = "DELETE FROM users WHERE login = '$user'";
+		
+		var_dump($sql);
+		if ($PDO->query($sql)) {
+			$_SESSION['msgn'] = "Users <strong>$user</strong> deleted. <br />";
+			header("Location: userlist");
+		}
+		else {
+			echo "error";
+		} 
+	}
+
+
+	
+	/**
+	 * function user_up();
+	 * Update user info.
+	 *
+	 * @param string $log or $email,$login,$pass,$name,$lname
+	 *
+	 * @return array $datau 
+	 *   
+	 */
+	function user_up($log='', $email='',  $pass='', $name='', $lname='',$role='2') {
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		if ($email != '') {
+			$email = Registration::clear($email);
+			$log   = Registration::clear($log);
+			$pass  = Registration::clear($pass);
+			$name  = Registration::clear($name);
+			$lname = Registration::clear($lname);
+			if ($pass != ''){
+				$pass = md5($pass);
+				$sql = "UPDATE users SET 
+						email = '$email',
+						pass  = '$pass',
+						name  = '$name',
+						lastname = '$lname',
+						role = '$role'
+				WHERE login = '$log'";
+			}
+			$sql = "UPDATE users SET 
+					email = '$email',
+					name  = '$name',
+					lastname = '$lname',
+					role = '$role'
+			WHERE login = '$log'";
+			if ($PDO->query($sql)){
+				header("Location: index.php?user=$log");
+			}	
+		}
+		else {
+			$sql = "SELECT * FROM users WHERE login = '$log'";
+			$stmt = $PDO->query($sql);
+			global $datau;
+			$datau = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+			$datau = $datau['0']; 
+			return $datau;
+		}
+	}
+	
 	function log($login, $pass){
 		$pass = md5($pass);
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT role FROM users WHERE login = '$login' and pass = '$pass'";
 		$stmt = $PDO->query($sql);
 		$rez = $stmt->fetch(PDO::FETCH_OBJ);
 		if ($rez) {
+			$tlog = date("Y-m-d H:i:s", time());
+			$sql = "UPDATE users SET tlog = '$tlog' WHERE login = '$login' and pass = '$pass'";
+			$stmt = $PDO->query($sql);
 			return $rez->role;
 		}
 		else {
 			return false;
 		}
 	}
-		
+	
+	
+	
+	
 	function addnews($titles, $shorttext, $fulltext, $lang){
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$titles = Registration::clear($titles);
 		$shorttext = Registration::clear($shorttext);
 		$fulltext = Registration::clear($fulltext);
@@ -94,7 +201,7 @@ class SQL extends PDO {
 	}
 		
 	function upnews($id, $titles, $shorttext, $fulltext, $lang = 'en'){
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$titles = Registration::clear($titles);
 		$shorttext = Registration::clear($shorttext);
 		$fulltext = Registration::clear($fulltext);
@@ -115,7 +222,7 @@ class SQL extends PDO {
 	}
 		
 	function del($id){
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sqla = array(	"DELETE FROM posts WHERE id = $id",
 						"DELETE FROM posts_short WHERE id = $id",
 						"DELETE FROM posts_full WHERE id = $id"
@@ -136,7 +243,7 @@ class SQL extends PDO {
 		$page = 2;
 		$curp -= 1;
 		$curp *= $page;
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT 
 				posts.id,
 				posts.author,
@@ -157,7 +264,7 @@ class SQL extends PDO {
 		}
 			
 	function showup($lang='en', $id){
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT 
 					posts.id,
 					posts.author,
@@ -168,7 +275,6 @@ class SQL extends PDO {
 				FROM posts
 				INNER JOIN posts_short ON posts.id = $id AND posts.id = posts_short.id
 				INNER JOIN posts_full ON posts.id = posts_full.id
-				LIMIT 0, 5
 				";
 		$stmt = $PDO->query($sql);
 		global $datamup;
@@ -202,7 +308,7 @@ class SQL extends PDO {
 					INNER JOIN posts_full ON posts.id = posts_full.id
 					ORDER BY posts.id DESC
 					";
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$col = $PDO->query($sql);
 		$m = $col->fetchAll();
 		if ($m > $n) {
@@ -212,7 +318,7 @@ class SQL extends PDO {
 	}
 	
 	function show_news($id, $lang='en'){
-		$PDO = new PDO('mysql:host=localhost;dbname=test1', self::DB_LOGIN, self::DB_PASSWORD);
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT	posts_full.full_$lang 
 				FROM posts_full
 				WHERE id = $id

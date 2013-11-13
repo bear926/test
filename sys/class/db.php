@@ -8,6 +8,10 @@ $dbh->query("CREATE TABLE IF NOT EXISTS users (
 	login varchar(50) NOT NULL default '',
 	pass varchar(50) NOT NULL default '',
 	email varchar(50) NOT NULL default '',
+	treg timestamp NOT NULL,
+	tlog timestamp NOT NULL,
+	name varchar(15) NOT NULL default '',
+	lastname varchar(25) NOT NULL default '',
 	role ENUM('1','2','3') NOT NULL default '2',
 	PRIMARY KEY (id))");
 

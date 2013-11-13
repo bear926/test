@@ -5,20 +5,35 @@
  $in = "Other";
  $av = "Author";
  $kon = "Contacts";
- //register and enter
+
+//register and enter
  $regi = "Register";
  $log = "login";
  $pas = "Password";
  $pasr = 'Re-type password';
  $welcom = "Logged in as ";
+ $userup = 'edit';
  $out = "out"; 
  $chekus = "User with username, or email already exists";
- //add news
+ $dimg = 'Download new image';
+ $bloc = 'Thiss account blocked';
+ $erchar = 'Available characters in';
+
+//redact data user
+ $name = "Name";
+ $lname = 'Last name';
+ $treg = 'Time register';
+ $tlog = 'Time last login';
+ $usap = 'Data update';
+ $userlist = 'edit users';
+
+//add news
  $na = "Submit News";
  $pic = "Enter data from images";
  $namar = "News title";
  $shortn = "Short text news";
  $fulln = "Full text news";
+
 //msg
  $erdata = "Invalid!";
  $nodata = "NOT ALL DATA!";

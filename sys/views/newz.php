@@ -1,10 +1,10 @@
 <?php
 defined('IND') or die('No direct script access.');
-if($_SESSION['role']=== "1" and isset($_GET['id'])){
+if(($_SESSION['role']=== "1" or $_SESSION['role']==="3") and isset($_GET['id'])){
 	if(isset($_GET['del'])){
 		SQL::del($_GET['id']);
 	}
-	$news1 = new SQL('mysql:host=localhost;dbname=test1', DB_LOGIN, DB_PASSWORD);
+	
 	SQL::showup(URL::lang(),$_GET['id']);
 	$n = $datamup['0'];
 	if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST['submit'])){
@@ -35,7 +35,7 @@ if($_SESSION['role']=== "1" and isset($_GET['id'])){
 
 if($_SESSION['role'] === "1" and !isset($_GET['id'])){
 	if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST['submit'])){
-		$news1 = new SQL();
+		
 		echo SQL::addnews($_POST['title'],$_POST['shorttext'],$_POST['fulltext'],URL::lang());
 	}
 ?>
