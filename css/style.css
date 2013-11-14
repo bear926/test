@@ -86,6 +86,12 @@ body{
     width: 590px;
 	
 }
+#coment{
+	margin: 15px auto 30px;
+	padding: 10px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+}
 #news {
 	margin: 15px auto 30px;
 	padding: 10px;

@@ -32,13 +32,16 @@ $dbh->query("CREATE TABLE IF NOT EXISTS posts_short (
 	INDEX (id),
 	FOREIGN KEY (id) REFERENCES posts(id))");
 	
-$dbh->query("CREATE TABLE IF NOT EXISTS posts_full (
+$dbh->query("CREATE TABLE IF NOT EXISTS comment (
 	id int(4) auto_increment,
-	full_ua text NOT NULL default 'Дані відсутні',
-	full_ru text NOT NULL default 'Нет даних',
-	full_en text NOT NULL default 'No data',
-	INDEX (id),
-	FOREIGN KEY (id) REFERENCES posts(id))");
+	id_post int(4),
+	post_lang varchar(2) NOT NULL default '',
+	id_user int(4),
+	time timestamp NOT NULL,
+	title varchar(100) NOT NULL default '',
+	text text NOT NULL default '',
+	INDEX (id,id_post,id_user )
+	");
 
 		
 ?>

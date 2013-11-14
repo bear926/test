@@ -101,11 +101,11 @@ class SQL extends PDO {
 		
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "DELETE FROM users WHERE login = '$user'";
-		
-		var_dump($sql);
+
 		if ($PDO->query($sql)) {
 			$_SESSION['msgn'] = "Users <strong>$user</strong> deleted. <br />";
 			header("Location: userlist");
+			exit;
 		}
 		else {
 			echo "error";
@@ -139,16 +139,17 @@ class SQL extends PDO {
 						name  = '$name',
 						lastname = '$lname',
 						role = '$role'
-				WHERE login = '$log'";
+						WHERE login = '$log'";
 			}
 			$sql = "UPDATE users SET 
 					email = '$email',
 					name  = '$name',
 					lastname = '$lname',
 					role = '$role'
-			WHERE login = '$log'";
+			    WHERE login = '$log'";
 			if ($PDO->query($sql)){
 				header("Location: index.php?user=$log");
+				exit;
 			}	
 		}
 		else {
@@ -178,66 +179,55 @@ class SQL extends PDO {
 		}
 	}
 	
+
 	
-	
-	
-	function addnews($titles, $shorttext, $fulltext, $lang){
+	function addnews($titles, $fulltext, $lang){
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
-		$titles = Registration::clear($titles);
-		$shorttext = Registration::clear($shorttext);
-		$fulltext = Registration::clear($fulltext);
 		$user = $_SESSION['user'];
 		$time = date("Y-m-d H:i:s", time());
-		$sqla = array(	
-						"INSERT INTO posts (title_$lang, author, time) VALUES ('$titles', '$user', '$time')",
-						"INSERT INTO posts_short (short_$lang) VALUES ('$shorttext')",
-						"INSERT INTO posts_full (full_$lang) VALUES ('$fulltext')"
-						);
-		foreach($sqla as $f){
-			$PDO->query($f);
-		}
-		$_SESSION['msgn'] = $GLOBALS['is']." ";
-		header("Location: http://test1.rpgfun.net/".$id);
-	}
-		
-	function upnews($id, $titles, $shorttext, $fulltext, $lang = 'en'){
-		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
-		$titles = Registration::clear($titles);
-		$shorttext = Registration::clear($shorttext);
-		$fulltext = Registration::clear($fulltext);
-		$user = $_SESSION['user'];
-		$time = date("Y-m-d H:i:s", time());
-		$sqla = array(	"UPDATE posts SET title_$lang = '$titles' WHERE id = $id",
-						"UPDATE posts SET author = '$user' WHERE id = $id",
-						"UPDATE posts SET time = '$time' WHERE id = $id",
-						"UPDATE posts_short SET short_$lang = '$shorttext' WHERE id = $id",
-						"UPDATE posts_full SET full_$lang = '$fulltext' WHERE id = $id"
-						);
-
-		foreach($sqla as $f){
-			$PDO->query($f);
-		}
-		$_SESSION['msgn'] = $GLOBALS['up']." ";
-		header("Location: http://test1.rpgfun.net/".$id);
-	}
-		
-	function del($id){
-		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
-		$sqla = array(	"DELETE FROM posts WHERE id = $id",
-						"DELETE FROM posts_short WHERE id = $id",
-						"DELETE FROM posts_full WHERE id = $id"
-						);
-
-		foreach($sqla as $f){
-			$PDO->query($f);
-		}
-		$_SESSION['msgn'] = $GLOBALS['del'].$id." ";
-		header("Location: http://test1.rpgfun.net/".$id);
+		foreach($lang as $v){
+		  $title = $titles["$v"];
+			$text = $fulltext["$v"];
+			$title = Registration::clear($title);
+		  $text = Registration::clear($text);
+			if ($title =='' or $text ==''){
+				continue;
+			}
+			$sqla = "INSERT INTO post_$v (title, author, time, text) VALUES ('$title', '$user', '$time','$text')";
 			
+			$PDO->query($sqla);
+		}
+		header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+		exit;
+	}
+		
+	function upnews($id, $titles, $fulltext, $lang = 'en'){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$titles = Registration::clear($titles);
+		$shorttext = Registration::clear($shorttext);
+		$fulltext = Registration::clear($fulltext);
+		$user = $_SESSION['user'];
+		$time = date("Y-m-d H:i:s", time());
+		$sqla = "UPDATE post_$lang SET title = '$titles', author = '$user', time = '$time',text = '$fulltext' WHERE id = $id";
+			if($PDO->query($sqla )){
+				$_SESSION['msgn'] = $GLOBALS['up']." ";
+				header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+				exit;
+		  }
+	}
+		
+	function del($id, $lang){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sqla = "DELETE FROM post_$lang WHERE id = $id";
+			if ($PDO->query($sqla)){
+				$_SESSION['msgn'] = $GLOBALS['del'].$id." ";
+				header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+				exit;
+			}
 	}
 		
 	function show_all($lang='en', $curp='1') {
-		//Who numb page in one page
+		//That numb page in one page
 		if ($curp == NULL)
 			$curp = '1';
 		$page = 2;
@@ -245,40 +235,23 @@ class SQL extends PDO {
 		$curp *= $page;
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT 
-				posts.id,
-				posts.author,
-				posts.time,
-				posts.title_$lang,
-				posts_short.short_$lang,
-				posts_full.full_$lang
-			FROM posts
-			INNER JOIN posts_short ON posts.id = posts_short.id
-			INNER JOIN posts_full ON posts.id = posts_full.id
-			ORDER BY posts.id DESC
+			*
+			FROM post_$lang
+			ORDER BY id DESC
 			LIMIT $curp, $page
 		";
 		$stmt = $PDO->query($sql);
 		global $datam;
-		$datam = $stmt->fetchAll(PDO::FETCH_NUM); 
+		$datam = $stmt->fetchAll(PDO::FETCH_NUM);
 		return $datam;
-		}
-			
+	}
+		
 	function showup($lang='en', $id){
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
-		$sql = "SELECT 
-					posts.id,
-					posts.author,
-					posts.time,
-					posts.title_$lang,
-					posts_short.short_$lang,
-					posts_full.full_$lang
-				FROM posts
-				INNER JOIN posts_short ON posts.id = $id AND posts.id = posts_short.id
-				INNER JOIN posts_full ON posts.id = posts_full.id
-				";
+		$sql = "SELECT * FROM post_$lang WHERE id = '$id'";
 		$stmt = $PDO->query($sql);
 		global $datamup;
-		$datamup = $stmt->fetchAll(PDO::FETCH_NUM); 
+		$datamup = $stmt->fetchAll(PDO::FETCH_ASSOC); 
 		return $datamup;
 	}
 	
@@ -287,7 +260,7 @@ class SQL extends PDO {
 	 * Explode pages as qeury.
 	 *
 	 * @param string $n
-	 *   Who show number page in index page.
+	 *   That show number page in index page.
 	 *
 	 * @param string $lang
 	 *   Lang site.
@@ -297,40 +270,92 @@ class SQL extends PDO {
 	 */
 	function page($n, $lang) {
 		$sql = "SELECT 
-						posts.id,
-						posts.author,
-						posts.time,
-						posts.title_$lang,
-						posts_short.short_$lang,
-						posts_full.full_$lang
-					FROM posts
-					INNER JOIN posts_short ON posts.id = posts_short.id
-					INNER JOIN posts_full ON posts.id = posts_full.id
-					ORDER BY posts.id DESC
+						*
+					FROM post_$lang
+					ORDER BY id DESC
 					";
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$col = $PDO->query($sql);
 		$m = $col->fetchAll();
+		$m = count($m);
 		if ($m > $n) {
 			$r = $m % $n;
 			return $ra = range(1, $n);
-		}
-	}
-	
-	function show_news($id, $lang='en'){
-		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
-		$sql = "SELECT	posts_full.full_$lang 
-				FROM posts_full
-				WHERE id = $id
-				";
-		if($rez = $PDO->query($sql)){
-			$dat = $rez->fetch(PDO::FETCH_ASSOC);
-			return $dat["full_$lang"];
 		}
 		else{
 			return false;
 		}
 	}
+	
+	function show_news($id, $lang='en'){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sql = "SELECT text
+				FROM post_$lang
+				WHERE id = $id
+				";
+		if($rez = $PDO->query($sql)){
+			$dat = $rez->fetch(PDO::FETCH_ASSOC);
+			return $dat["text"];
+		}
+		else{
+			return false;
+		}
+	}
+	
+	
+		/**
+	 * function addcoment();
+	 * Add coments in database.
+	 *
+	 * @param string $title, $text, $id, $user, $lang
+	 *   That show number page in index page.
+	 *
+	 * @param string $lang
+	 *   Lang site.
+	 *
+	 * @return array $ra
+	 *   Value array is a number page.
+	 */
+	function addcomment( $title, $text, $id, $user, $lang){
+	
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$time = date("Y-m-d H:i:s", time());
+		$title = Registration::clear($title);
+		$text = Registration::clear($text);
+		$sqla = "INSERT INTO comment (id_post, title, lang, author, time, text) VALUES ('$id', '$title', '$lang', '$user', '$time', '$text')";
+		if($PDO->query($sqla)){
+		
+			header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+			exit;
+		}
+		else{
+			echo "ERROR";
+		}
+	}
+	
+	
+	function allcomment($id, $lang='en', $curp='1') {
+		if ($curp == NULL)
+			$curp = '1';
+		$page = 2;
+		$curp -= 1;
+		$curp *= $page;
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		
+		$sql = "SELECT 
+			*
+			FROM comment
+			WHERE id_post = '$id' and lang = '$lang'
+			ORDER BY id DESC
+			LIMIT $curp, $page
+		";
+		$stmt = $PDO->query($sql);
+		global $datac;
+		$datac = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $datac;
+	}
 }
+	
+	
 	
 ?>

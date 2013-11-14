@@ -4,9 +4,7 @@ defined('IND') or die('No direct script access.');
 
 class URL {
 	public $adr = array();
-	public $v;
-	public $k;
-	
+
 	/**
 	 * Dfghjkl.
 	 *
