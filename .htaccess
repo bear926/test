@@ -3,7 +3,7 @@ RewriteEngine On
 RewriteBase /
 
 #RewriteRule ^(?:application|modules|system)\b.* index.php/$0 [L]
-php_value display_errors 1
+#php_value display_errors 1
 
 
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -162,6 +162,7 @@ class SQL extends PDO {
 		}
 	}
 	
+	
 	function log($login, $pass){
 		$pass = md5($pass);
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
@@ -179,7 +180,6 @@ class SQL extends PDO {
 		}
 	}
 	
-
 	
 	function addnews($titles, $fulltext, $lang){
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
@@ -201,6 +201,7 @@ class SQL extends PDO {
 		exit;
 	}
 		
+		
 	function upnews($id, $titles, $fulltext, $lang = 'en'){
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$titles = Registration::clear($titles);
@@ -216,6 +217,7 @@ class SQL extends PDO {
 		  }
 	}
 		
+		
 	function del($id, $lang){
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sqla = "DELETE FROM post_$lang WHERE id = $id";
@@ -226,11 +228,11 @@ class SQL extends PDO {
 			}
 	}
 		
-	function show_all($lang='en', $curp='1') {
+		
+	function show_all($lang='en', $page, $curp='1') {
 		//That numb page in one page
 		if ($curp == NULL)
 			$curp = '1';
-		$page = 2;
 		$curp -= 1;
 		$curp *= $page;
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
@@ -246,6 +248,7 @@ class SQL extends PDO {
 		return $datam;
 	}
 		
+		
 	function showup($lang='en', $id){
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT * FROM post_$lang WHERE id = '$id'";
@@ -254,6 +257,7 @@ class SQL extends PDO {
 		$datamup = $stmt->fetchAll(PDO::FETCH_ASSOC); 
 		return $datamup;
 	}
+	
 	
 	/**
 	 * function page();
@@ -279,14 +283,16 @@ class SQL extends PDO {
 		$m = $col->fetchAll();
 		$m = count($m);
 		if ($m > $n) {
-			$r = $m % $n;
-			return $ra = range(1, $n);
+			$r = $m / $n;
+			$r = ceil($r);
+			return $ra = range(1, $r);
 		}
 		else{
 			return false;
 		}
 	}
 	
+
 	function show_news($id, $lang='en'){
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sql = "SELECT text
@@ -302,6 +308,25 @@ class SQL extends PDO {
 		}
 	}
 	
+	function pagecom($n, $id, $lang) {
+		$sql = "SELECT 
+			*
+			FROM comment
+			WHERE id_post = '$id' and lang = '$lang'
+			ORDER BY id DESC";
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$col = $PDO->query($sql);
+		$m = $col->fetchAll();
+		$m = count($m);
+		if ($m > $n) {
+			$r = $m / $n;
+			$r = ceil($r);
+			return range(1, $r);
+		}
+		else{
+			return false;
+		}
+	}
 	
 		/**
 	 * function addcoment();
@@ -317,15 +342,13 @@ class SQL extends PDO {
 	 *   Value array is a number page.
 	 */
 	function addcomment( $title, $text, $id, $user, $lang){
-	
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$time = date("Y-m-d H:i:s", time());
 		$title = Registration::clear($title);
 		$text = Registration::clear($text);
 		$sqla = "INSERT INTO comment (id_post, title, lang, author, time, text) VALUES ('$id', '$title', '$lang', '$user', '$time', '$text')";
 		if($PDO->query($sqla)){
-		
-			header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$id);
 			exit;
 		}
 		else{
@@ -334,10 +357,18 @@ class SQL extends PDO {
 	}
 	
 	
-	function allcomment($id, $lang='en', $curp='1') {
+	function delcom($idnews,$iddel){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sqla = "DELETE FROM comment WHERE id = $iddel";
+		if ($PDO->query($sqla)){
+			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			exit;
+		}
+	}
+	
+	function allcomment($id, $lang='en', $page, $curp='1' ) {
 		if ($curp == NULL)
 			$curp = '1';
-		$page = 2;
 		$curp -= 1;
 		$curp *= $page;
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
@@ -354,6 +385,64 @@ class SQL extends PDO {
 		$datac = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $datac;
 	}
+	
+	function addrating($idnews, $lang, $user, $mark){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sqla = "INSERT INTO rating (id_news, lang, user, mark) VALUES ('$idnews', '$lang', '$user', '$mark')";
+		if($PDO->query($sqla)){
+			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			exit;
+		}
+		else{
+			echo "ERROR";
+		}
+	
+	}
+	
+	function chekrating($idnews, $lang, $user){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sqla = "SELECT id, mark FROM rating WHERE id_news = '$idnews' and user = '$user' and lang = '$lang'";
+		if($stmt = $PDO->query($sqla)){
+			$rez = $stmt->fetch(PDO::FETCH_ASSOC);
+			return $rez;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	function delmark($idnews, $lang, $iddel){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sqla = "DELETE FROM rating WHERE id = $iddel and lang = '$lang'";
+		if ($PDO->query($sqla)){
+			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			exit;
+		}
+	}
+	
+		
+	function delrating($idnews, $lang){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sqla = "DELETE FROM rating WHERE id_news = $idnews and lang = '$lang'";
+		if ($PDO->query($sqla)){
+			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			exit;
+		}
+	}
+	
+	function selectmark($idnews, $lang){
+		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
+		$sqla = "SELECT  avg(mark) FROM rating WHERE id_news = '$idnews' and lang = '$lang'";
+		if($stmt = $PDO->query($sqla)){
+		
+			$rez = $stmt->fetch(PDO::FETCH_ASSOC);
+			return $rez;
+		}
+		else{
+			return false;
+		}
+	}
+	
 }
 	
 	

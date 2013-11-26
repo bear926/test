@@ -3,6 +3,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" type="text/css" href="/css/style.css">
+<script src="http://test1.rpgfun.net/sys/js/jQmini1.js"></script>
+<script src="http://test1.rpgfun.net/sys/js/validjq.js"></script>
 <title><?=$_SERVER['HTTP_HOST']?></title>
 </head>
 

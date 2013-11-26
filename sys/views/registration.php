@@ -9,7 +9,7 @@ if (isset($_SESSION['msgr'])) {
 if(!$_SESSION['msg']){
 ?>
 <h1><?=$regi?></h1>
-<form action="<?=$_SERVER['REQUEST_URI']?>" method="post">
+<form action="<?=$_SERVER['REQUEST_URI']?>" method="post" id='formreg'>
 	
 	<div>
 						
@@ -19,7 +19,7 @@ if(!$_SESSION['msg']){
 							<label><?=$log?></label>
 						</td>
 						<td width="75%">
-							<input name="login" type="text" value="<?=$_POST['login']?>">
+							<input name="login" type="text" id="loginr" value="<?=$_POST['login']?>">
 						</td>
 					</tr>
 					<tr>
@@ -27,7 +27,7 @@ if(!$_SESSION['msg']){
 							<label><?=$pas?>&nbsp </label>
 						</td>
 						<td>
-							<input name="pass" type="password" value="<?=$_POST['pass']?>">
+							<input name="pass" type="password" id="passr" value="<?=$_POST['pass']?>">
 						</td>
 					</tr>
 					<tr>
@@ -35,7 +35,7 @@ if(!$_SESSION['msg']){
 							<label><?=$pasr?>&nbsp </label>
 						</td>
 						<td>
-							<input name="passr" type="password" value="<?=$_POST['passr']?>">
+							<input name="passr" type="password"  id="passrr" value="<?=$_POST['passr']?>">
 						</td>
 					</tr>
 					<tr>
@@ -43,7 +43,7 @@ if(!$_SESSION['msg']){
 							<label>EMAIL</label>
 						</td>
 						<td>
-							<input name="email" type="text" value="<?=$_POST['email']?>">
+							<input name="email" type="text" id="email" value="<?=$_POST['email']?>">
 						</td>
 					</tr>
 				</table>
@@ -52,11 +52,12 @@ if(!$_SESSION['msg']){
 			<p><img src="http://test1.rpgfun.net/sys/class/noise-picture.php"></p>
 		</div>
 		<label><?=$pic?></label>
-		<input type="text" name="str" size="6"><br />
+		<input type="text" name="captha" id="capt" size="6"><br />
 	</div>
-	
-	<input type="submit" value="OK">
+<input type="submit" id="submitr" value="OK">
 </form>
+<!-- <script src="http://test1.rpgfun.net/sys/js/valid.js"></script> !-->
+
 <?php
 }
 else{

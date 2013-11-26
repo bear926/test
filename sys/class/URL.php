@@ -20,6 +20,7 @@ class URL {
 	}
 	
 	
+	
 	function lang($lang='en'){
 			$adr = explode('/', $_SERVER['REQUEST_URI']);
 			foreach($adr as $k){

@@ -6,14 +6,14 @@ if(($_SESSION['role']=== "1" or $_SESSION['role']==="3") and isset($_GET['id']))
 	}
 	
 	SQL::showup(URL::lang(),$_GET['id']);
-  if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST['submit'])){
-		if(SQL::upnews($_GET['id'], $_POST['title'], $_POST['fulltext'],URL::lang()))
+  if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST['submitup'])){
+		if(SQL::upnews($_GET['id'], $_POST['title'], $_POST['fulltext'],URL::lang())) {
 			echo "Update ok";
 		}
-	 
+	}
 	?>
 	
-<form name="form1" method="post" action="<?=$_SERVER['PHP_SELF']?>">
+<form name="form1" method="post" action="">
 	<p>
 	   <label><?=$namar?> <br />
 		 <input value="<?=$datamup['0']['title']?>" type="text" name="title" id="title" size="60">
@@ -24,7 +24,7 @@ if(($_SESSION['role']=== "1" or $_SESSION['role']==="3") and isset($_GET['id']))
 	</p>   	
 		<p>
 		  <label>
-	   <input type="submit" name="submit" id="submit" value="Зберегти">
+	   <input type="submit" name="submitup" id="submit" value="Зберегти">
 	   </label>
 	 </p>
 </form>

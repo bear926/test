@@ -28,7 +28,7 @@ class Registration{
 			if(!isset($_SESSION['str'])){
 				echo "Pless ON image for you browse";
 			}
-			elseif($_SESSION['str'] == strtoupper($_POST['str'])){
+			elseif($_SESSION['str'] == strtoupper($_POST['captha'])){
 	
 				Registration::clear_reg($mail);
 				Registration::clear_reg($login);
