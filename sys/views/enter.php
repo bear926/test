@@ -30,7 +30,7 @@ if (!$_SESSION['user']) {
 			<strong><?=$pas?></strong>
 			<input name="pass" type="password">
 			<input name="button" type="submit" value="OK">
-			<a href="registration"><?=$regi?></a>
+			<a href="reg"><?=$regi?></a>
         </form>
     </div>
 

@@ -6,6 +6,7 @@ class SQL extends PDO {
 	const DB_LOGIN = 'root1';
 	const DB_PASSWORD = 'password';
 	const DB_NAME = 'test1';
+	const SITE_NAME = 'http://test1.rpgfun.net/';
 	
 	public $sql;
 	public $v;
@@ -197,7 +198,7 @@ class SQL extends PDO {
 			
 			$PDO->query($sqla);
 		}
-		header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+		header("Location: ".SITE_NAME.URL::lang().'/'.$id);
 		exit;
 	}
 		
@@ -212,7 +213,7 @@ class SQL extends PDO {
 		$sqla = "UPDATE post_$lang SET title = '$titles', author = '$user', time = '$time',text = '$fulltext' WHERE id = $id";
 			if($PDO->query($sqla )){
 				$_SESSION['msgn'] = $GLOBALS['up']." ";
-				header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+				header("Location: ".SITE_NAME.URL::lang().'/'.$id);
 				exit;
 		  }
 	}
@@ -223,7 +224,7 @@ class SQL extends PDO {
 		$sqla = "DELETE FROM post_$lang WHERE id = $id";
 			if ($PDO->query($sqla)){
 				$_SESSION['msgn'] = $GLOBALS['del'].$id." ";
-				header("Location: http://test1.rpgfun.net/".URL::lang().'/'.$id);
+				header("Location: ".SITE_NAME.URL::lang().'/'.$id);
 				exit;
 			}
 	}
@@ -348,7 +349,7 @@ class SQL extends PDO {
 		$text = Registration::clear($text);
 		$sqla = "INSERT INTO comment (id_post, title, lang, author, time, text) VALUES ('$id', '$title', '$lang', '$user', '$time', '$text')";
 		if($PDO->query($sqla)){
-			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$id);
+			header("Location: ".SITE_NAME.URL::lang().'/?news='.$id);
 			exit;
 		}
 		else{
@@ -361,7 +362,7 @@ class SQL extends PDO {
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sqla = "DELETE FROM comment WHERE id = $iddel";
 		if ($PDO->query($sqla)){
-			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			header("Location: ".SITE_NAME.URL::lang().'/?news='.$idnews);
 			exit;
 		}
 	}
@@ -390,7 +391,7 @@ class SQL extends PDO {
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sqla = "INSERT INTO rating (id_news, lang, user, mark) VALUES ('$idnews', '$lang', '$user', '$mark')";
 		if($PDO->query($sqla)){
-			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			header("Location: ".SITE_NAME.URL::lang().'/?news='.$idnews);
 			exit;
 		}
 		else{
@@ -415,7 +416,7 @@ class SQL extends PDO {
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sqla = "DELETE FROM rating WHERE id = $iddel and lang = '$lang'";
 		if ($PDO->query($sqla)){
-			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			header("Location: ".SITE_NAME.URL::lang().'/?news='.$idnews);
 			exit;
 		}
 	}
@@ -425,7 +426,7 @@ class SQL extends PDO {
 		$PDO = new PDO("mysql:host=localhost;dbname=".self::DB_NAME."", self::DB_LOGIN, self::DB_PASSWORD);
 		$sqla = "DELETE FROM rating WHERE id_news = $idnews and lang = '$lang'";
 		if ($PDO->query($sqla)){
-			header("Location: http://test1.rpgfun.net/".URL::lang().'/?news='.$idnews);
+			header("Location: ".SITE_NAME.URL::lang().'/?news='.$idnews);
 			exit;
 		}
 	}

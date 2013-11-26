@@ -7,7 +7,7 @@ class Views {
 	function __get($name){
 			self::$a++;
 			 $this->asc[self::$a]  = self::$template.$name.".php";
-		}
+	}
 		
 	function cut($str, $nc = 152){
 		if (strlen($str) > $nc){

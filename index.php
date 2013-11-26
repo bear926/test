@@ -42,7 +42,7 @@ if (URL::explod() == 'out') {
 	Users::out();
 }
 	
-if (URL::explod() == 'registration') {
+if (URL::explod() == 'reg') {
 	$content->registration;
 }
 else {
